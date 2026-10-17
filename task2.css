@@ -1,0 +1,293 @@
+/* =========================================================
+   Salveene: mobile-first CSS (+ a little JavaScript in script.js)
+   Base styles = phone layout. Bigger screens are added with
+   min-width media queries at the bottom.
+   ========================================================= */
+
+/* ---------- 1. VARIABLES ---------- */
+:root {
+  --pink: #f6d5de;
+  --pink-soft: #fbeaf0;
+  --pink-deep: #c9748f;
+  --black: #111;
+  --white: #fff;
+  --text: #2a2a2a;
+  --muted: #666;
+
+  /* Theme colours: body.dark below changes ONLY these values */
+  --bg: #fffafb;            /* page background */
+  --surface: #ffffff;       /* header, categories, shop section */
+  --surface-alt: #fbeaf0;   /* featured, about, hero (was --pink-soft) */
+  --fade-rgb: 251, 234, 240;/* hero text fade, matches --surface-alt */
+  --heading: #111111;
+  --line: #f0e4e8;
+  --field-border: #b89aa6;
+  --btn-bg: #111111;        /* the dark pill buttons */
+  --btn-fg: #ffffff;
+  --dot: rgba(0, 0, 0, .3);
+  --logo-bg: transparent;   /* the logo has black text, so dark mode gives it a light plate */
+  --error: #b3261e;
+  --success: #1b6b3a;
+  --space: 1rem;          /* grows on bigger screens (see media queries) */
+  --header-h: 80px;       /* used so anchor jumps are not hidden by the sticky header */
+  --font-body: 'Poppins', system-ui, sans-serif;
+  --font-head: 'Cormorant Garamond', Georgia, serif;
+}
+
+body.dark {
+  --bg: #16111a;
+  --surface: #1f1824;
+  --surface-alt: #2b2030;
+  --fade-rgb: 43, 32, 48;
+  --text: #efe6ea;
+  --heading: #ffffff;
+  --muted: #bcadb5;
+  --line: #3a2d3f;
+  --field-border: #8a7690;
+  --btn-bg: #ffffff;
+  --btn-fg: #111111;
+  --dot: rgba(255, 255, 255, .45);
+  --logo-bg: #fbeaf0;
+  --error: #ff9d96;
+  --success: #8fe0a8;
+}
+
+/* ---------- 2. RESET AND BASE ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 1rem;        /* 16px minimum for body text */
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  transition: background-color .3s, color .3s;   /* smooth theme change */
+}
+img { max-width: 100%; height: auto; display: block; }
+ul { list-style: none; margin: 0; padding: 0; }
+h1, h2, h3, p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+a:focus-visible { outline: 3px solid var(--pink-deep); outline-offset: 2px; }
+svg { width: 1.5rem; height: 1.5rem; stroke: currentColor; fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+
+.container { width: min(1180px, 100% - 2 * var(--space)); margin-inline: auto; }
+.label { font-size: .8rem; letter-spacing: .25em; text-transform: uppercase; margin-bottom: .6rem; }
+.eyebrow { display: flex; align-items: center; gap: .6rem; font-size: .8rem; letter-spacing: .25em; text-transform: uppercase; margin-bottom: .6rem; }
+.eyebrow::before { content: ""; width: 1.5rem; height: 2px; background: #e76f95; }
+
+/* ---------- 3. BUTTONS ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  min-height: 44px;                   /* easy to tap with a thumb */
+  padding: .6rem 1.4rem;
+  border-radius: 2rem;
+  font-weight: 500; font-size: 1rem;
+  transition: background .25s, color .25s;
+}
+.btn-pink { background: var(--pink); color: var(--black); }
+.btn-pink:hover { background: var(--pink-deep); color: var(--white); }
+.btn-black { background: var(--btn-bg); color: var(--btn-fg); }
+.btn-black:hover { background: var(--pink-deep); color: var(--white); }
+
+/* ---------- 4. TOP BAR ---------- */
+.topbar { background: var(--pink); color: var(--black); text-align: center; padding: .5rem var(--space); font-size: .875rem; }
+.topbar a { text-decoration: underline; font-weight: 500; }
+
+/* ---------- 5. HEADER (phone: logo + button on row 1, menu on row 2) ---------- */
+.site-header { position: sticky; top: 0; z-index: 50; background: var(--surface); box-shadow: 0 1px 0 var(--line); transition: background-color .3s; }
+.header-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .4rem 1rem; padding: .5rem var(--space); }
+.logo img { height: 52px; width: auto; background: var(--logo-bg); border-radius: 10px; }
+
+.header-tools { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
+.tool-btn {
+  min-height: 44px; padding: .4rem .9rem;
+  border: 2px solid var(--heading); border-radius: 2rem;
+  background: transparent; color: var(--heading);
+  font: inherit; font-size: .9rem; font-weight: 500; cursor: pointer;
+  transition: background .25s, color .25s;
+}
+.tool-btn:hover { background: var(--heading); color: var(--bg); }
+.tool-btn:focus-visible { outline: 3px solid var(--pink-deep); outline-offset: 2px; }
+
+/* Phones: Order button lives in the top bar and in the menu; menu is hidden until JS adds .open */
+.header-btn { display: none; }
+.main-nav { order: 3; flex-basis: 100%; display: none; }
+.main-nav.open { display: block; }
+.main-nav ul { display: flex; flex-direction: column; gap: .25rem; }
+.main-nav a { display: block; padding: .5rem .6rem; border-bottom: 2px solid transparent; }
+.main-nav a:hover, .main-nav a.active { border-color: var(--heading); }
+
+/* ---------- 6. HERO SLIDER (scroll-snap, no JavaScript) ---------- */
+.hero { position: relative; }
+.slides { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; }
+.slides::-webkit-scrollbar { display: none; }
+.slide {
+  position: relative; flex: 0 0 100%; scroll-snap-align: start;
+  min-height: 480px; display: flex; align-items: flex-end;
+  background: var(--surface-alt); overflow: hidden;
+  scroll-margin-top: var(--header-h);
+}
+.slide-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.slide::after { /* soft pink fade so the text is readable */
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(var(--fade-rgb), .97) 38%, rgba(var(--fade-rgb), .15) 75%);
+}
+.slide-text { position: relative; z-index: 1; padding: 1.5rem var(--space) 3.2rem; }
+.hero-title { font-family: var(--font-head); font-weight: 500; font-size: clamp(2.4rem, 9vw, 4.2rem); line-height: 1.05; color: var(--heading); margin-bottom: .8rem; }
+.hero-sub { margin-bottom: 1.2rem; }
+.dots { position: absolute; bottom: .9rem; left: 0; right: 0; z-index: 2; display: flex; justify-content: center; gap: .5rem; }
+.dots a { width: 12px; height: 12px; border-radius: 50%; background: var(--dot); }
+.dots a:hover { background: var(--heading); }
+
+/* ---------- 7. CATEGORIES ---------- */
+.cats { background: var(--surface); transition: background-color .3s; padding: 1.5rem var(--space); }
+.cats ul { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem 1.25rem; }
+.cats a { display: block; width: 88px; text-align: center; font-size: .95rem; }
+.circle { width: 72px; height: 72px; border-radius: 50%; background: var(--pink); color: var(--black); margin: 0 auto .5rem; display: flex; align-items: center; justify-content: center; transition: background .25s, transform .25s; }
+.circle svg { width: 2.2rem; height: 2.2rem; }
+.cats a:hover .circle { background: var(--pink-deep); color: var(--white); transform: translateY(-4px); }
+
+/* ---------- 8. FEATURED COLLECTION ---------- */
+.featured { background: var(--surface-alt); transition: background-color .3s; padding: 2rem 0; }
+.featured-inner { display: grid; gap: 1.5rem; }
+.featured h2, .sec-head h2, .about h2 { font-family: var(--font-head); font-weight: 600; color: var(--heading); line-height: 1.1; }
+.featured h2 { font-size: clamp(2rem, 7vw, 2.8rem); margin-bottom: .8rem; }
+.brand-img { display: inline-block; height: 1.7em; width: auto; vertical-align: -.5em; background: var(--logo-bg); border-radius: 6px; }
+.featured-text p:not(.label) { color: var(--muted); margin-bottom: 1.2rem; }
+.f-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+.f-card img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 4px; }
+.f-name { display: block; margin-top: .5rem; }
+.f-card:hover img { box-shadow: 0 8px 22px rgba(0,0,0,.15); }
+
+/* ---------- 9. SHOP GRID + CSS-ONLY CATEGORY FILTER ---------- */
+.best { position: relative; background: var(--surface); transition: background-color .3s; padding: 2.5rem 0; }
+.anchor { display: block; height: 0; scroll-margin-top: var(--header-h); position: absolute; top: 0; }
+.sec-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: .5rem 1rem; margin-bottom: 1.2rem; }
+.sec-head h2 { font-size: clamp(1.8rem, 6vw, 2.4rem); }
+.sec-head p { color: var(--muted); }
+.view-all { text-decoration: underline; }
+.p-grid { display: grid; gap: .75rem; grid-template-columns: repeat(2, 1fr); }
+.prod img { width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 4px; }
+.prod h3 { font-weight: 500; font-size: 1rem; margin-top: .6rem; }
+.price { color: var(--muted); font-size: .9rem; margin: .2rem 0 .6rem; }
+.order { width: 100%; font-size: .9rem; padding-inline: .5rem; }
+
+/* Titles: only the default one shows until a category is chosen */
+.t { display: none; }
+.t-default { display: inline; }
+
+/* When a category anchor is the :target, hide other products and swap the title */
+.best:has(#cat-abayas:target)  .prod:not([data-cat="abayas"])  { display: none; }
+.best:has(#cat-coords:target)  .prod:not([data-cat="coords"])  { display: none; }
+.best:has(#cat-dresses:target) .prod:not([data-cat="dresses"]) { display: none; }
+.best:has(#cat-hijabs:target)  .prod:not([data-cat="hijabs"])  { display: none; }
+
+.best:has(.anchor:not(#cat-all):target) .t-default { display: none; }
+.best:has(#cat-abayas:target)  .t-abayas  { display: inline; }
+.best:has(#cat-coords:target)  .t-coords  { display: inline; }
+.best:has(#cat-dresses:target) .t-dresses { display: inline; }
+.best:has(#cat-hijabs:target)  .t-hijabs  { display: inline; }
+
+/* ---------- 10. ABOUT ---------- */
+.about { background: var(--surface-alt); transition: background-color .3s; }
+.about-inner { display: grid; }
+.about-photo { width: 100%; height: 360px; object-fit: cover; object-position: center 25%; }
+.about-text { padding: 1.5rem var(--space); }
+.about h2 { font-size: clamp(1.8rem, 6vw, 2.4rem); margin-bottom: .8rem; }
+.about-text p:not(.label) { color: var(--text); margin-bottom: 1.2rem; max-width: 65ch; }
+.feats { display: grid; gap: 1rem; padding: 0 var(--space) 2rem; }
+.feats li { display: flex; align-items: center; gap: .9rem; }
+.ic { flex-shrink: 0; width: 46px; height: 46px; border-radius: 50%; background: var(--pink); color: var(--black); display: flex; align-items: center; justify-content: center; }
+.ic svg { width: 1.3rem; height: 1.3rem; }
+.feats b { display: block; font-weight: 500; }
+.feats small { color: var(--muted); font-size: .875rem; }
+
+/* ---------- 10b. CONTACT FORM ---------- */
+.contact { background: var(--bg); padding: 2.5rem 0; transition: background-color .3s; scroll-margin-top: var(--header-h); }
+.contact-inner { max-width: 36rem; }
+.contact h2 { font-family: var(--font-head); font-weight: 600; font-size: clamp(1.8rem, 6vw, 2.4rem); color: var(--heading); line-height: 1.1; margin-bottom: .5rem; }
+.contact-intro { color: var(--muted); margin-bottom: 1.2rem; }
+.field { margin-bottom: 1rem; }
+.field label { display: block; font-weight: 500; margin-bottom: .3rem; }
+.field input, .field textarea {
+  width: 100%; font: inherit; color: var(--text); background: var(--surface);
+  border: 1.5px solid var(--field-border); border-radius: 6px; padding: .6rem .75rem;
+  transition: background-color .3s, border-color .2s;
+}
+.field textarea { resize: vertical; min-height: 7rem; }
+.field input:focus-visible, .field textarea:focus-visible { outline: 3px solid var(--pink-deep); outline-offset: 1px; }
+.field .invalid { border-color: var(--error); border-width: 2px; }
+.counter { font-size: .85rem; color: var(--muted); text-align: right; margin-top: .25rem; }
+.counter.limit { color: var(--error); font-weight: 500; }
+.msg { min-height: 1.4em; margin-top: .3rem; font-size: .9rem; }
+.msg.error { color: var(--error); font-weight: 500; }          /* clearly different from success */
+.msg.success { color: var(--success); font-weight: 500; font-size: 1rem; }
+.contact .btn { border: 0; cursor: pointer; font-family: inherit; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+
+/* ---------- 11. FOOTER ---------- */
+.site-footer { background: #141414; color: var(--white); padding-top: 2rem; }
+.footer-inner { display: grid; gap: 1.5rem; padding-bottom: 1.5rem; }
+.footer-logo img { width: 96px; height: 96px; border-radius: 50%; background: var(--white); }
+.site-footer h2 { font-size: 1rem; font-weight: 500; margin-bottom: .6rem; }
+.site-footer li a { display: inline-block; padding: .25rem 0; color: #ddd; }
+.site-footer li a:hover { color: var(--pink); }
+.site-footer p { color: #ddd; margin-bottom: .8rem; }
+.copyright { background: var(--pink); color: var(--black) !important; margin: 0 !important; padding: .8rem var(--space); text-align: center; font-size: .875rem; }
+
+/* =========================================================
+   BIGGER SCREENS (min-width media queries, added on top)
+   ========================================================= */
+
+/* 600px and up: large phones and small tablets */
+@media (min-width: 600px) {
+  :root { --space: 1.5rem; }
+  .header-btn { display: inline-flex; padding: .4rem 1rem; font-size: .9rem; margin-left: auto; }
+  .header-tools { margin-left: 0; }
+  .p-grid { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .footer-inner { grid-template-columns: repeat(2, 1fr); }
+  .about-photo { height: 440px; }
+  .slide { min-height: 520px; }
+}
+
+/* 900px and up: laptops. Header becomes one row, hero text sits beside the photo */
+@media (min-width: 900px) {
+  :root { --space: 2rem; --header-h: 90px; }
+
+  .header-inner { flex-wrap: nowrap; padding-block: .75rem; }
+  .logo img { height: 64px; }
+  .main-nav { order: 0; flex-basis: auto; display: block; }   /* always visible */
+  .main-nav ul { flex-direction: row; gap: 2rem; }
+  #menu-btn { display: none; }                                 /* no button needed */
+  .header-tools { order: 1; }                                  /* theme button goes last, after Order */
+  .header-btn { padding: .6rem 1.4rem; font-size: 1rem; margin-left: 0; }
+
+  .slide { min-height: 460px; align-items: center; }
+  .slide-img { inset: 0 0 0 auto; width: 58%; }
+  .slide::after { background: linear-gradient(90deg, var(--surface-alt) 42%, rgba(var(--fade-rgb), 0) 72%); }
+  .slide-text { padding: 2rem 0 2rem 8%; max-width: 55%; }
+  .dots { bottom: 1.2rem; }
+
+  .cats ul { gap: 1.5rem 3.5rem; }
+  .featured { padding: 3rem 0; }
+  .featured-inner { grid-template-columns: .8fr 2.2fr; align-items: center; gap: 2.5rem; }
+  .best { padding: 3.5rem 0; }
+  .p-grid { grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+
+  .about-inner { grid-template-columns: .95fr 1.2fr 1fr; align-items: center; }
+  .about-photo { height: 100%; min-height: 420px; }
+  .about-text { padding: 2rem 2.5rem; }
+  .feats { padding: 2rem 2rem 2rem 0; }
+
+  .footer-inner { grid-template-columns: auto 1fr 1.5fr; align-items: start; gap: 3rem; }
+}
+
+
+/* 1200px and up: wide screens. Five columns fit comfortably */
+@media (min-width: 1200px) {
+  .p-grid { grid-template-columns: repeat(5, 1fr); gap: 1rem; }
+}
